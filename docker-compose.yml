@@ -1,0 +1,53 @@
+# [WARNING] This compose file is meant for experimentation and learning only.  
+# It is designed only to run on a single machine.  If you would like 
+# something more robust, see the stack.yml file for use with the StackEngine 
+# controller.
+# 
+# Overview: Consul (service-discovery) and Registrator (automagic service 
+# registry) are what make the haproxy container go.  Inside the haproxy 
+# container, supervisord allows for multiple processes to run.  Haproxy is the 
+# one we want, and `consul-template` is what watches for services to go 
+# up/down.
+#
+# the nginx* containers are simply to demonstrate the dynamic nature of the 
+# haproxy config out of the box. Please manually run a few more on the host 
+# `docker run -d --name nginx3 -p :80 nginx`
+# then stop and start them to see the config mutate.
+
+
+# The consul and registrator containers are infrastructure that makes this 
+# stack work with docker-compose. The StackEngine Container Applicaiton Center
+# has this functionality built in.
+consul:
+    command: "-server -advertise 192.168.99.102 -bootstrap"
+    container_name: consul
+    image: progrium/consul
+    ports:
+        - "8500:8500"
+        - "8400:8400"
+        - "8600:53/udp"
+registrator:
+    command: "consul://192.168.99.102:8500" # Might need: `-ip 192.168.99.102`
+    container_name: registrator
+    hostname: "192.168.99.102"
+    image: gliderlabs/registrator
+    volumes:
+        - /var/run/docker.sock:/tmp/docker.sock
+# This container is watching consul for services of the `nginx-80` type 
+# and adjusting the HaProxy config accordingly.
+haproxy:
+    container_name: stackhub_haproxy
+    image: ha4
+    ports:
+        - "80:5000"
+# These are just through away example containers for demonstration purposes.
+nginx1:
+    container_name: nginx1
+    image: nginx
+    ports:
+        - ":80"
+nginx2:
+    container_name: nginx2
+    image: nginx
+    ports:
+        - ":80"
