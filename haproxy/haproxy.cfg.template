@@ -23,5 +23,5 @@ backend nginx_80
     option httpchk HEAD / HTTP/1.1\r\nHost:localhost
     
     # `consul-tempate` writes backends dynamically
-    {{range service "nginx-80"}}
+    {{range service "nginx-instance-nginx-80"}}
     server {{.Node}} {{.Address}}:{{.Port}}{{end}}

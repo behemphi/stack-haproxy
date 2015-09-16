@@ -19,7 +19,7 @@
 # stack work with docker-compose. The StackEngine Container Applicaiton Center
 # has this functionality built in.
 consul:
-    command: "-server -advertise 192.168.99.102 -bootstrap"
+    command: "-server -advertise 192.168.99.104 -bootstrap"
     container_name: consul
     image: progrium/consul
     ports:
@@ -27,9 +27,9 @@ consul:
         - "8400:8400"
         - "8600:53/udp"
 registrator:
-    command: "consul://192.168.99.102:8500" # Might need: `-ip 192.168.99.102`
+    command: "consul://192.168.99.104:8500" # Might need: `-ip 192.168.99.102`
     container_name: registrator
-    hostname: "192.168.99.102"
+    hostname: "192.168.99.104"
     image: gliderlabs/registrator
     volumes:
         - /var/run/docker.sock:/tmp/docker.sock
@@ -37,7 +37,7 @@ registrator:
 # and adjusting the HaProxy config accordingly.
 haproxy:
     container_name: stackhub_haproxy
-    image: ha4
+    image: behemphi/haproxy
     ports:
         - "80:5000"
 # These are just through away example containers for demonstration purposes.

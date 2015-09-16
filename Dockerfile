@@ -19,7 +19,8 @@ ADD \
     https://github.com/hashicorp/consul-template/releases/download/v0.10.0/consul-template_0.10.0_linux_amd64.tar.gz \
     /tmp/consul-template_0.10.0_linux_amd64.tar.gz
 
-RUN tar zxf /tmp/consul-template_0.10.0_linux_amd64.tar.gz  -C /usr/bin/consul-template
+RUN tar zxf /tmp/consul-template_0.10.0_linux_amd64.tar.gz  -C /tmp
+RUN mv /tmp/consul-template_0.10.0_linux_amd64/consul-template /usr/bin/consul-template
 RUN chmod +x /usr/bin/consul-template
 RUN mkdir -p /etc/consul-template/template.d
 

@@ -16,15 +16,22 @@ You will need to get the IP address from your local guest:
 `docker-machine ip stackengine-haproxy`
 
 Copy this value into `docker-compose.yml` replacing the existing 
-`192.168.99.102`
+`192.168.99.104`
 
-Now type:
+For now you can build the haproxy image locally:
+
+`docker build -t behemphi/haproxy .`
+
+To run the services as a single machien stack:
 
 `docker-compose up`
 
+Note, this will run services in the foreground with some nice color-coded 
+output.  It will be handy for later when smoke testing.
+
 # Overiew
 
-The `consul` and `registrater` services are the plumbing necessary to keep 
+The `consul` and `registrator` services are the plumbing necessary to keep 
 track of the various nginx services that are starting and stopping.
 
 The `haproxy` service contains a small amount of plumbing as well. The
