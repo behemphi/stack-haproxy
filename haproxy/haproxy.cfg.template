@@ -22,6 +22,8 @@ backend nginx_80
     mode http
     option httpchk HEAD / HTTP/1.1\r\nHost:localhost
     
-    # `consul-tempate` writes backends dynamically
-    {{range service "nginx-instance-nginx-80"}}
-    server {{.Node}} {{.Address}}:{{.Port}}{{end}}
+    # `confd` writes backends dynamically
+    # You will need to manually change the key to the one you want
+    # Don't forget to do this in the TOML file as well.
+    {{range gets "/apps/haproxy-backend-instance-haproxy-backend-80/containers/*"}}
+    server {{base .Key}} {{.Value}} check{{end}}

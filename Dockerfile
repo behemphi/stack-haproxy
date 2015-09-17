@@ -1,43 +1,48 @@
 # Create an HAProxy container that will dynamically rewrite its config
 # when backends are added and removed.
-FROM gliderlabs/alpine
+FROM ubuntu:14.04
 
 #
-# Install the parts: supervisord, confd, haproxy
+# Install os packages
 #
 
 # Install supervisor and haproxy
-RUN apk-install \
-    supervisor \
-    haproxy
+RUN apt-get update 
+RUN apt-get upgrade -y
+RUN apt-get install -y \
+        python-setuptools \
+        haproxy
 
 #
-# Install consul-template
+# Install and configure `supervisord`
 #
 
-ADD \
-    https://github.com/hashicorp/consul-template/releases/download/v0.10.0/consul-template_0.10.0_linux_amd64.tar.gz \
-    /tmp/consul-template_0.10.0_linux_amd64.tar.gz
-
-RUN tar zxf /tmp/consul-template_0.10.0_linux_amd64.tar.gz  -C /tmp
-RUN mv /tmp/consul-template_0.10.0_linux_amd64/consul-template /usr/bin/consul-template
-RUN chmod +x /usr/bin/consul-template
-RUN mkdir -p /etc/consul-template/template.d
-
-#
-# Configure supervisord
-#
+RUN \
+    easy_install supervisor
 
 ADD \
     supervisord/supervisord.conf \
     /etc/supervisord.conf
 
 #
-# Configure haproxy
+# Install and configure confd
 #
+
+ADD \
+    confd/confd \
+    /usr/bin/confd
+
+RUN \
+    chmod +x /usr/bin/confd && \
+    mkdir -p /etc/confd/conf.d && \
+    mkdir -p /etc/confd/templates
 
 ADD \  
     haproxy/haproxy.cfg.template \
-    /etc/consul-template/template.d/haproxy.cfg.template
+    /etc/confd/templates/haproxy.cfg.template
 
-ENTRYPOINT /usr/bin/supervisord -c /etc/supervisord.conf
+ADD \  
+    haproxy/haproxy.toml \
+    /etc/confd/conf.d/haproxy.toml
+
+ENTRYPOINT /usr/local/bin/supervisord -c /etc/supervisord.conf
