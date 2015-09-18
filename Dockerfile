@@ -42,7 +42,14 @@ ADD \
     /etc/confd/templates/haproxy.cfg.template
 
 ADD \  
-    haproxy/haproxy.toml \
-    /etc/confd/conf.d/haproxy.toml
+    haproxy/haproxy.toml.template \
+    /etc/confd/conf.d/haproxy.toml.template
+
+ADD \
+    haproxy/confd.sh \
+    /usr/bin/confd.sh
+
+RUN \
+    chmod +x /usr/bin/confd.sh
 
 ENTRYPOINT /usr/local/bin/supervisord -c /etc/supervisord.conf

@@ -25,5 +25,7 @@ backend nginx_80
     # `confd` writes backends dynamically
     # You will need to manually change the key to the one you want
     # Don't forget to do this in the TOML file as well.
-    {{range gets "/apps/haproxy-backend-instance-haproxy-backend-80/containers/*"}}
+    {{$service := getenv "SE_BACKEND_RANGE"}}
+    {{range gets (print $service)}}
     server {{base .Key}} {{.Value}} check{{end}}
+
